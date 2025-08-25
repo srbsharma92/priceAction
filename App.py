@@ -173,7 +173,13 @@ def screener():
 
 # Streamlit UI part
 
-st.title("Live Price Action in NSE - Free NOW")
+st.markdown(
+     """
+     <h1 style='text-align: center;'>Live Price Action in NSE - Free NOW</h1>
+     <h3 style='text-align: center; color: gray;'>Where the Smart Money of BIG Fund houses going !!</h3>
+     """,
+     unsafe_allow_html=True,
+)
 
 fo_checkbox = st.checkbox("Only F&O Stocks", value=True)
 
@@ -200,4 +206,10 @@ if st.button("Refresh"):
     else:
         st.write("No data found or error occurred.")
 
-st.subheader("Developed by Saurabh Sharma")
+st.markdown(
+    """
+    <h2 style='text-align: center;'>Developed by Saurabh Sharma</h2>
+    <h5 style='text-align: center; color: gray;'>All a person needs to do is observe what the market is telling him and evaluate it - Jesse Livermore</h5>
+    """,
+    unsafe_allow_html=True,
+)
