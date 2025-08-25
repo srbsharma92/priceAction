@@ -156,16 +156,16 @@ def screener():
         
     
     #5m charting
-    df_5m_Price= df[df['change|5'].abs() > 0.5 ].sort_values(by='change|5', ascending=False)
+    df_5m_Price= df[df['change|5'].abs() > 0.7 ].sort_values(by='change|5', ascending=False)
     df_5m_Price['Momentum']=  np.where(df_5m_Price['change|5'] > 0, 'Bullish','Bearish')
     df_5m_Price=df_5m_Price[['name','change|5','Momentum']]
     
-    df_5m_Vol= df[ (df['volume_change|5'] > 50 ) | (df['volume_change|15']> 50) ].sort_values(by='volume_change|5', ascending=False)
+    df_5m_Vol= df[ (df['volume_change|5'] > 200 ) | (df['volume_change|15']> 200) ].sort_values(by='volume_change|5', ascending=False)
     df_5m_Vol['Momentum']=  np.where(df_5m_Vol['volume_change|5'] > 0, 'Bullish','Bearish')
     df_5m_Vol=df_5m_Vol[['name','volume_change|5','Momentum']]
     
     #opening
-    df_opening= df[df['opening'].abs() > 0.4 ].sort_values(by='opening', ascending=False)
+    df_opening= df[df['opening'].abs() > 2.0 ].sort_values(by='opening', ascending=False)
     df_opening['Momentum']=  np.where(df_opening['opening'] > 0, 'Bullish','Bearish')
     df_opening=df_opening[['name','opening','Momentum']]
     
@@ -173,7 +173,7 @@ def screener():
 
 # Streamlit UI part
 
-st.title("Live Price Action in NSE")
+st.title("Live Price Action in NSE - Free NOW")
 
 fo_checkbox = st.checkbox("Only F&O Stocks", value=True)
 
@@ -199,3 +199,5 @@ if st.button("Refresh"):
         #st.dataframe(df_output)
     else:
         st.write("No data found or error occurred.")
+
+st.subheader("Developed by Saurabh Sharma")
