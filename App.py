@@ -169,6 +169,8 @@ def screener():
     df_opening= df[df['opening'].abs() > 2.0 ].sort_values(by='opening', ascending=False)
     df_opening['Momentum']=  np.where(df_opening['opening'] > 0, 'Bullish','Bearish')
     df_opening=df_opening[['name','opening','Momentum']]
+    if datetime.now().time() > time(9, 35) :
+        df_opening =pd.DataFrame()
     
     return df, df_5m_Price,df_5m_Vol,df_opening
 
