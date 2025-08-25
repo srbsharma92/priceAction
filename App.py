@@ -142,7 +142,7 @@ def screener():
     # Filter for the F&O Stocks only
     
     # Read the Excel file into a pandas DataFrame
-    fo_list = pd.read_excel('/Users/saurabhsharma/SBC Docs/SSMarketTool/data/FnO list.xlsx',sheet_name='nse FnO')
+    fo_list = pd.read_excel('FnO list.xlsx',sheet_name='nse FnO')
     
     # Extract a specific column as a list
     fo_list1 = fo_list['SYMBOL'].tolist()
