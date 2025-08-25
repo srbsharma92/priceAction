@@ -133,6 +133,7 @@ def screener():
     
     df = pd.DataFrame(data_list, columns=cols)
     df = df[df['exchange'] == 'NSE']
+    df = df[df['close|60'] >= 65]
     
     #EMAs metrics
     df['close_EMA10_1H'] = ((100 * (df['close|60'] - df['EMA10|60']) / df['EMA10|60'])).round(2)
@@ -156,7 +157,7 @@ def screener():
         
     
     #5m charting
-    df_5m_Price= df[df['change|5'].abs() > 0.4 ].sort_values(by='change|5', ascending=False)
+    df_5m_Price= df[df['change|5'].abs() > 0.8 ].sort_values(by='change|5', ascending=False)
     df_5m_Price['Momentum']=  np.where(df_5m_Price['change|5'] > 0, 'Bullish','Bearish')
     df_5m_Price=df_5m_Price[['name','change|5','Momentum']]
     
