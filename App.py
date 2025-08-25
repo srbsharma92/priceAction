@@ -173,9 +173,9 @@ def screener():
 
 # Streamlit UI part
 
-st.title("SaurabhSharma Stock Market Tool")
+st.title("Live Price Action in NSE")
 
-fo_checkbox = st.checkbox("F&O", value=True)
+fo_checkbox = st.checkbox("Only F&O Stocks", value=True)
 
 
 if st.button("Refresh"):
@@ -183,7 +183,6 @@ if st.button("Refresh"):
     with st.spinner("Loading data..."):
         df_output, df_output_5mP,df_output_5mVol,df_output_open = screener()
     if df_output_open is not None and not df_output_open.empty:
-        df_output_open=df_output_open[['opening' ] + [col for col in df_output.columns if col not in ['opening' ] ]]
         st.subheader("Opening Momentum")
         st.dataframe(df_output_open)
     if df_output_5mP is not None and not df_output_5mP.empty:
@@ -192,11 +191,11 @@ if st.button("Refresh"):
     if df_output_5mVol is not None and not df_output_5mVol.empty:
         st.subheader("Volume Momentum in last 5mins")
         st.dataframe(df_output_5mVol)
-    if df_output is not None and not df_output.empty:
-        first_col=['name','close_EMA10_1H','close_EMA20_1H','close_DEMA10']
-        new_order = first_col + [col for col in df_output.columns if col not in first_col]
-        df_output = df_output[new_order]
-        st.subheader("All Scripts")
-        st.dataframe(df_output)
+    #if df_output is not None and not df_output.empty:
+     #   first_col=['name','close_EMA10_1H','close_EMA20_1H','close_DEMA10']
+      #  new_order = first_col + [col for col in df_output.columns if col not in first_col]
+       # df_output = df_output[new_order]
+        #st.subheader("All Scripts")
+        #st.dataframe(df_output)
     else:
         st.write("No data found or error occurred.")
