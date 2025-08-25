@@ -10,6 +10,7 @@ import streamlit as st
 import requests
 import json
 import pandas as pd
+import numpy as np
 from datetime import datetime, time
 
 def screener():
@@ -156,12 +157,17 @@ def screener():
     
     #5m charting
     df_5m_Price= df[df['change|5'].abs() > 0.5 ].sort_values(by='change|5', ascending=False)
+    df_5m_Price['Momentum']=  np.where(df_5m_Price['change|5'] > 0, 'Bullish','Bearish')
+    df_5m_Price=df_5m_Price[['name','change|5','Momentum']]
+    
     df_5m_Vol= df[ (df['volume_change|5'] > 50 ) | (df['volume_change|15']> 50) ].sort_values(by='volume_change|5', ascending=False)
+    df_5m_Vol['Momentum']=  np.where(df_5m_Vol['volume_change|5'] > 0, 'Bullish','Bearish')
+    df_5m_Vol=df_5m_Vol[['name','volume_change|5','Momentum']]
     
     #opening
     df_opening= df[df['opening'].abs() > 0.4 ].sort_values(by='opening', ascending=False)
-    if datetime.now().time() > time(9, 35) :
-        df_opening =pd.DataFrame()
+    df_opening['Momentum']=  np.where(df_opening['opening'] > 0, 'Bullish','Bearish')
+    df_opening=df_opening[['name','opening','Momentum']]
     
     return df, df_5m_Price,df_5m_Vol,df_opening
 
