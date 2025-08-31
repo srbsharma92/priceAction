@@ -12,6 +12,7 @@ import json
 import pandas as pd
 import numpy as np
 from datetime import datetime, time
+import pytz
 
 def screener():
     country="india"
@@ -66,7 +67,7 @@ def screener():
         "name", "change", "change|5", "volume_change|5", "change|15", "volume_change|15",
         "ATR|60", "low|60", "high|60", "RSI|60",
         "close|60", "EMA10|60", "EMA20|60", "EMA200|60", "EMA10", "EMA20", "EMA200",
-        "close", 
+        "close", 'volume','gap','volume|5',
         "exchange"
     ]
     
@@ -133,7 +134,9 @@ def screener():
     
     df = pd.DataFrame(data_list, columns=cols)
     df = df[df['exchange'] == 'NSE']
-    df = df[df['close|60'] >= 65]
+    # Fliters for lighter data
+    df=df[ (df['close']>60) & (df['close']<10000)] #price filter
+
     
     #EMAs metrics
     df['close_EMA10_1H'] = ((100 * (df['close|60'] - df['EMA10|60']) / df['EMA10|60'])).round(2)
@@ -156,63 +159,108 @@ def screener():
         df[col] = pd.to_numeric(df[col], errors='ignore')
         
     
-    #5m charting
-    df_5m_Price= df[df['change|5'].abs() > 0.8 ].sort_values(by='change|5', ascending=False)
+   #5m charting
+    df_5m_Price= df[ (df['change|5'].abs() > 0.7) & ( (df['volume|5']*df['close']) > 1000000)].sort_values(by='change|5', ascending=False)
     df_5m_Price['Momentum']=  np.where(df_5m_Price['change|5'] > 0, 'Bullish','Bearish')
     df_5m_Price=df_5m_Price[['name','change|5','Momentum']]
+    df_5m_Price.columns=['Stock Name','Price Change% in 5mins','Momentum']
     
-    df_5m_Vol= df[ (df['volume_change|5'] > 200 ) | (df['volume_change|15']> 200) ].sort_values(by='volume_change|5', ascending=False)
-    df_5m_Vol['Momentum']=  np.where(df_5m_Vol['volume_change|5'] > 0, 'Bullish','Bearish')
-    df_5m_Vol=df_5m_Vol[['name','volume_change|5','Momentum']]
+    df_5m_Vol= df[ (df['volume_change|5'] > 200 ) & ( (df['volume|5']*df['close']) > 1000000) ].sort_values(by='volume_change|5', ascending=False)
+    df_5m_Vol['Momentum']=  np.where(df_5m_Vol['change|5'] > 0, 'Bullish','Bearish')
+    df_5m_Vol['Traded Value']=df_5m_Vol['close']* df_5m_Vol['volume']
+    df_5m_Vol=df_5m_Vol[['name','change|5','volume_change|5','Momentum','Traded Value']]
+    
+    #Presentation
+    df_5m_Vol['Traded Value'] = (df_5m_Vol['Traded Value'] / 10000000).round(2).astype(str) + 'Cr'
+    df_5m_Vol.columns=['Stock Name','Price Change% in 5mins','Volume Change% in 5mins','Momentum','Days Traded Value']
     
     #opening
-    df_opening= df[df['opening'].abs() > 2.0 ].sort_values(by='opening', ascending=False)
-    df_opening['Momentum']=  np.where(df_opening['opening'] > 0, 'Bullish','Bearish')
-    df_opening=df_opening[['name','opening','Momentum']]
-    if datetime.now().time() > time(9, 35) :
-        df_opening =pd.DataFrame()
+    df_opening= df[df['gap'].abs() > 2 ].sort_values(by='gap', ascending=False)
+    df_opening['gap']=df_opening['gap'].round(1)
+    df_opening['Momentum']=  np.where(df_opening['gap'] > 0, 'Bullish','Bearish')
+    df_opening=df_opening[['name','gap','Momentum']]
+    df_opening.columns=['Stock Name','Opening Gap','Momentum']
     
     return df, df_5m_Price,df_5m_Vol,df_opening
+
+
+#Funtion to highlist Bulish=Green & Bearish = Red
+def highlight_close(row):
+    if row['Momentum'] == 'Bullish':
+        return ['background-color: #d4edda; color: green;'] * len(row)
+    elif row['Momentum']  == 'Bearish':
+        return ['background-color: #f8d7da; color: red;'] * len(row)
+    else:
+        return ''
+
+
 
 # Streamlit UI part
 
 st.markdown(
+    """
+    <style>
+    .stApp {
+        background-color: #f0f4f8;
+        color: #333333;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
+st.markdown(
      """
-     <h1 style='text-align: center;'>Live Price Action in NSE - Free NOW</h1>
+     <h1 style='text-align: center; color:#4B8BBE;'>Live Price Action in NSE - Free NOW</h1>
      <h3 style='text-align: center; color: gray;'>Where the Smart Money of BIG Fund houses going !!</h3>
      """,
      unsafe_allow_html=True,
 )
 
-fo_checkbox = st.checkbox("Only F&O Stocks", value=True)
 
+col1, col2 = st.columns([1, 1])  # Two equal-width columns
 
-if st.button("Refresh"):
+with col1:
+    refresh = st.button("Refresh")
+    
+with col2:
+    fo_checkbox = st.checkbox("Only F&O Stocks", value=True)
+    
+# Add this after your main header markdown
+utc_now = datetime.utcnow()
+ist_tz = pytz.timezone('Asia/Kolkata')
+ist_time = utc_now.replace(tzinfo=pytz.utc).astimezone(ist_tz)
+current_time = ist_time.strftime("%H:%M:%S %d%b%y")
+st.markdown(f"<p style='text-align: center; color: gray;'>Updated At (IST): {current_time}  </p>", unsafe_allow_html=True)
+
+if refresh:
 
     with st.spinner("Loading data..."):
         df_output, df_output_5mP,df_output_5mVol,df_output_open = screener()
-    if df_output_open is not None and not df_output_open.empty:
-        st.subheader("Opening Momentum")
-        st.dataframe(df_output_open)
     if df_output_5mP is not None and not df_output_5mP.empty:
         st.subheader("Price Momentum in last 5mins")
+        df_output_5mP=df_output_5mP.style.apply(highlight_close,  axis=1)
         st.dataframe(df_output_5mP)
     if df_output_5mVol is not None and not df_output_5mVol.empty:
         st.subheader("Volume Momentum in last 5mins")
+        df_output_5mVol=df_output_5mVol.style.apply(highlight_close, axis=1)
         st.dataframe(df_output_5mVol)
-    #if df_output is not None and not df_output.empty:
-     #   first_col=['name','close_EMA10_1H','close_EMA20_1H','close_DEMA10']
-      #  new_order = first_col + [col for col in df_output.columns if col not in first_col]
-       # df_output = df_output[new_order]
-        #st.subheader("All Scripts")
-        #st.dataframe(df_output)
+    if df_output_open is not None and not df_output_open.empty:
+        st.subheader("Pre-Open Momentum")
+        df_output_open=df_output_open.style.apply(highlight_close, axis=1)
+        st.dataframe(df_output_open)
     else:
         st.write("No data found or error occurred.")
-
+      
 st.markdown(
     """
-    <h2 style='text-align: center;'>Developed by Saurabh Sharma</h2>
-    <h5 style='text-align: center; color: gray;'>All a person needs to do is observe what the market is telling him and evaluate it - Jesse Livermore</h5>
+    <h6 style='text-align: center; color: gray;'> "All a person needs to do is observe what the market is telling him & evaluate it"-Jesse Livermore</h6>
+    <h3 style='text-align: center; color:#25AD91;'>Developed by Saurabh Sharma</h3>
+    <p style='text-align: center;font-size: 16px; '><a href='mailto:srb_sharma@outlook.com' style='text-align: center;'>Contact @ srb_sharma@outlook.com</a></p>
+
+    <p style='text-align: right; font-size: 11px; font-style: italic; color: gray;'>**Only Stocks with Traded value above 10L</p>
+ 
     """,
     unsafe_allow_html=True,
 )
