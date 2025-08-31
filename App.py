@@ -250,8 +250,6 @@ if refresh:
         st.subheader("Pre-Open Momentum")
         df_output_open=df_output_open.style.apply(highlight_close, axis=1)
         st.dataframe(df_output_open)
-    else:
-        st.write("No data found or error occurred.")
       
 st.markdown(
     """
