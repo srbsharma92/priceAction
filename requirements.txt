@@ -1,0 +1,9 @@
+streamlit
+pandas
+numpy
+pytz
+requests
+yfinance
+plotly
+json
+datetime
