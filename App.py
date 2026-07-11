@@ -156,7 +156,7 @@ def screener():
         df = df[df['name'].isin(fo_list1)].sort_values(by='close_EMA10_1H', ascending=False)
     
     for col in df.columns:
-        df[col] = pd.to_numeric(df[col], errors='ignore')
+        df[col] = pd.to_numeric(df[col], errors='coerce')
         
     
    #5m charting
