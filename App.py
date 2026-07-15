@@ -159,7 +159,7 @@ def screener():
     #    df[col] = pd.to_numeric(df[col], errors='coerce')
         
     
-   #5m charting
+   #5m charting==============================
     df_5m_Price= df[ (df['change|5'].abs() > 0.7) & ( (df['volume|5']*df['close']) > 1000000)].sort_values(by='change|5', ascending=False)
     df_5m_Price['Momentum']=  np.where(df_5m_Price['change|5'] > 0, 'Bullish','Bearish')
     df_5m_Price=df_5m_Price[['name','change|5','Momentum']]
@@ -174,6 +174,21 @@ def screener():
     df_5m_Vol['Traded Value'] = (df_5m_Vol['Traded Value'] / 10000000).round(2).astype(str) + 'Cr'
     df_5m_Vol.columns=['Stock Name','Price Change% in 5mins','Volume Change% in 5mins','Momentum','Days Traded Value']
     
+    #15m charting =====================================================
+    df_15m_Price= df[ (df['change|15'].abs() > 0.7) & ( (df['volume|5']*df['close']) > 1000000)].sort_values(by='change|15', ascending=False)
+    df_15m_Price['Momentum']=  np.where(df_15m_Price['change|15'] > 0, 'Bullish','Bearish')
+    df_15m_Price=df_15m_Price[['name','change|15','Momentum']]
+    df_15m_Price.columns=['Stock Name','Price Change% in 5mins','Momentum']
+     
+    df_15m_Vol= df[ (df['volume_change|15'] > 200 ) & ( (df['volume|5']*df['close']) > 1000000) ].sort_values(by='volume_change|15', ascending=False)
+    df_15m_Vol['Momentum']=  np.where(df_15m_Vol['change|15'] > 0, 'Bullish','Bearish')
+    df_15m_Vol['Traded Value']=df_15m_Vol['close']* df_15m_Vol['volume']
+    df_15m_Vol=df_15m_Vol[['name','change|15','volume_change|15','Momentum','Traded Value']]
+     
+    #Presentation
+    df_15m_Vol['Traded Value'] = (df_15m_Vol['Traded Value'] / 10000000).round(2).astype(str) + 'Cr'
+    df_15m_Vol.columns=['Stock Name','Price Change% in 5mins','Volume Change% in 5mins','Momentum','Days Traded Value']
+
     #opening
     df_opening= df[df['gap'].abs() > 2 ].sort_values(by='gap', ascending=False)
     df_opening['gap']=df_opening['gap'].round(1)
@@ -181,7 +196,7 @@ def screener():
     df_opening=df_opening[['name','gap','Momentum']]
     df_opening.columns=['Stock Name','Opening Gap','Momentum']
     
-    return df, df_5m_Price,df_5m_Vol,df_opening
+    return df, df_5m_Price,df_5m_Vol,df_15m_Price,df_15m_Vol,df_opening
 
 
 #Funtion to highlist Bulish=Green & Bearish = Red
@@ -475,7 +490,8 @@ st.markdown(
 if refresh:
 
     with st.spinner("Loading data..."):
-        df_output, df_output_5mP,df_output_5mVol,df_output_open = screener()
+        df_output, df_output_5mP,df_output_5mVol,df_output_15mP,df_output_15mVol,df_output_open = screener()
+     #5mins tables=============================   
     if df_output_5mP is not None and not df_output_5mP.empty:
         st.markdown(
             "<div class='section-badge'><span class='icon'>⚡</span><span class='label'>Price Momentum in Last 5 Mins</span></div>",
@@ -492,6 +508,23 @@ if refresh:
         df_output_5mVol=df_output_5mVol.style.apply(highlight_close, axis=1)
         df_output_5mVol=theme_table(df_output_5mVol)
         st.table(df_output_5mVol)
+    #15mins tables=============================   
+    if df_output_15mP is not None and not df_output_15mP.empty:
+        st.markdown(
+            "<div class='section-badge'><span class='icon'>⚡</span><span class='label'>Price Momentum in Last 15 Mins</span></div>",
+            unsafe_allow_html=True
+        )
+        df_output_15mP=df_output_15mP.style.apply(highlight_close,  axis=1)
+        df_output_15mP=theme_table(df_output_15mP)
+        st.table(df_output_15mP)
+    if df_output_15mVol is not None and not df_output_15mVol.empty:
+        st.markdown(
+            "<div class='section-badge'><span class='icon'>📊</span><span class='label'>Volume Momentum in Last 15 Mins</span></div>",
+            unsafe_allow_html=True
+        )
+        df_output_15mVol=df_output_15mVol.style.apply(highlight_close, axis=1)
+        df_output_15mVol=theme_table(df_output_15mVol)
+        st.table(df_output_15mVol)
     if df_output_open is not None and not df_output_open.empty:
         st.markdown(
             "<div class='section-badge'><span class='icon'>🔔</span><span class='label'>Pre-Open Momentum</span></div>",
