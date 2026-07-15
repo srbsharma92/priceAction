@@ -195,15 +195,194 @@ def highlight_close(row):
 
 
 
-# Streamlit UI part
+# ============================= Streamlit UI part =============================
+
+st.set_page_config(
+    page_title="NSE Live Price Action | Smart Money Terminal",
+    page_icon="📈",
+    layout="wide",
+    initial_sidebar_state="collapsed",
+)
 
 st.markdown(
     """
     <style>
-    .stApp {
-        background-color: #f0f4f8;
-        color: #333333;
+
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+    html, body, [class*="css"]  {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
+
+    /* App background — deep navy finance terminal */
+    .stApp {
+        background: radial-gradient(circle at top left, #101b2d 0%, #0b1420 45%, #060a12 100%);
+        color: #E7ECF3;
+    }
+
+    /* Kill default streamlit padding clutter at top */
+    .block-container {
+        padding-top: 2rem;
+        padding-bottom: 3rem;
+        max-width: 1150px;
+    }
+
+    /* Hero header card */
+    .hero-card {
+        background: linear-gradient(135deg, rgba(20,33,54,0.95) 0%, rgba(11,20,32,0.95) 100%);
+        border: 1px solid rgba(212,175,55,0.35);
+        border-radius: 18px;
+        padding: 2rem 2.2rem 1.5rem 2.2rem;
+        margin-bottom: 1.6rem;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.45);
+        text-align: center;
+    }
+
+    .hero-eyebrow {
+        letter-spacing: 3px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #D4AF37;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+    }
+
+    .hero-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin: 0;
+        background: linear-gradient(90deg, #F4E4A6 0%, #D4AF37 45%, #F4E4A6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        line-height: 1.2;
+    }
+
+    .hero-subtitle {
+        font-size: 1.02rem;
+        color: #9DAAC0;
+        margin-top: 0.5rem;
+        font-weight: 500;
+        letter-spacing: 0.3px;
+    }
+
+    /* Controls row card */
+    .controls-card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 14px;
+        padding: 1rem 1.3rem;
+        margin-bottom: 0.6rem;
+    }
+
+    /* Timestamp pill */
+    .timestamp-pill {
+        display: inline-block;
+        margin: 0 auto;
+        padding: 6px 16px;
+        border-radius: 999px;
+        background: rgba(212,175,55,0.08);
+        border: 1px solid rgba(212,175,55,0.3);
+        color: #D4AF37;
+        font-size: 12.5px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+    .timestamp-wrap { text-align: center; margin: 0.4rem 0 1.6rem 0; }
+
+    /* Section badges above each table */
+    .section-badge {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 1.8rem 0 0.6rem 0;
+        padding: 10px 16px;
+        border-radius: 10px;
+        background: linear-gradient(90deg, rgba(212,175,55,0.12) 0%, rgba(212,175,55,0.02) 100%);
+        border-left: 3px solid #D4AF37;
+    }
+    .section-badge .icon {
+        font-size: 20px;
+    }
+    .section-badge .label {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #F0E6C8;
+        letter-spacing: 0.2px;
+    }
+
+    /* Buttons */
+    div.stButton > button {
+        background: linear-gradient(135deg, #D4AF37 0%, #B8912C 100%);
+        color: #0b1420;
+        font-weight: 700;
+        border: none;
+        border-radius: 10px;
+        padding: 0.6rem 1.4rem;
+        letter-spacing: 0.4px;
+        box-shadow: 0 4px 14px rgba(212,175,55,0.25);
+        transition: all 0.15s ease-in-out;
+        width: 100%;
+    }
+    div.stButton > button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(212,175,55,0.4);
+        color: #0b1420;
+    }
+
+    /* Checkbox label styling */
+    .stCheckbox label p {
+        font-weight: 600 !important;
+        color: #E7ECF3 !important;
+    }
+
+    /* DataFrame container polish */
+    [data-testid="stDataFrame"] {
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.08);
+        box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+    }
+
+    /* Divider */
+    hr {
+        border-color: rgba(255,255,255,0.08);
+    }
+
+    /* Footer */
+    .footer-quote {
+        text-align: center;
+        color: #8A96AA;
+        font-style: italic;
+        font-size: 0.92rem;
+        margin-top: 2.4rem;
+        padding-top: 1.2rem;
+        border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .footer-name {
+        text-align: center;
+        font-family: 'Playfair Display', serif;
+        font-weight: 700;
+        font-size: 1.3rem;
+        color: #D4AF37;
+        margin-top: 0.4rem;
+    }
+    .footer-contact a {
+        color: #9DAAC0 !important;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    .footer-contact a:hover {
+        color: #D4AF37 !important;
+    }
+    .footer-note {
+        text-align: right;
+        font-size: 11px;
+        font-style: italic;
+        color: #64708A;
+        margin-top: 1rem;
+    }
+
     </style>
     """,
     unsafe_allow_html=True
@@ -212,53 +391,67 @@ st.markdown(
 
 st.markdown(
      """
-     <h1 style='text-align: center; color:#4B8BBE;'>Live Price Action in NSE - Free NOW</h1>
-     <h3 style='text-align: center; color: gray;'>Where the Smart Money of BIG Fund houses going !!</h3>
+     <div class="hero-card">
+        <div class="hero-eyebrow">NSE &nbsp;•&nbsp; Institutional Grade Screener</div>
+        <div class="hero-title">Live Price Action Terminal</div>
+        <div class="hero-subtitle">Track where the Smart Money of Big Fund Houses is moving — in real time</div>
+     </div>
      """,
      unsafe_allow_html=True,
 )
 
-
+st.markdown('<div class="controls-card">', unsafe_allow_html=True)
 col1, col2 = st.columns([1, 1])  # Two equal-width columns
 
 with col1:
-    refresh = st.button("Refresh")
+    refresh = st.button("🔄  Refresh Market Data")
     
 with col2:
     fo_checkbox = st.checkbox("Only F&O Stocks", value=True)
+st.markdown('</div>', unsafe_allow_html=True)
     
 # Add this after your main header markdown
 utc_now = datetime.utcnow()
 ist_tz = pytz.timezone('Asia/Kolkata')
 ist_time = utc_now.replace(tzinfo=pytz.utc).astimezone(ist_tz)
 current_time = ist_time.strftime("%H:%M:%S %d%b%y")
-st.markdown(f"<p style='text-align: center; color: gray;'>Updated At (IST): {current_time}  </p>", unsafe_allow_html=True)
+st.markdown(
+    f"<div class='timestamp-wrap'><span class='timestamp-pill'>🕒 Updated At (IST): {current_time}</span></div>",
+    unsafe_allow_html=True
+)
 
 if refresh:
 
     with st.spinner("Loading data..."):
         df_output, df_output_5mP,df_output_5mVol,df_output_open = screener()
     if df_output_5mP is not None and not df_output_5mP.empty:
-        st.subheader("Price Momentum in last 5mins")
+        st.markdown(
+            "<div class='section-badge'><span class='icon'>⚡</span><span class='label'>Price Momentum in Last 5 Mins</span></div>",
+            unsafe_allow_html=True
+        )
         df_output_5mP=df_output_5mP.style.apply(highlight_close,  axis=1)
-        st.dataframe(df_output_5mP)
+        st.dataframe(df_output_5mP, use_container_width=True)
     if df_output_5mVol is not None and not df_output_5mVol.empty:
-        st.subheader("Volume Momentum in last 5mins")
+        st.markdown(
+            "<div class='section-badge'><span class='icon'>📊</span><span class='label'>Volume Momentum in Last 5 Mins</span></div>",
+            unsafe_allow_html=True
+        )
         df_output_5mVol=df_output_5mVol.style.apply(highlight_close, axis=1)
-        st.dataframe(df_output_5mVol)
+        st.dataframe(df_output_5mVol, use_container_width=True)
     if df_output_open is not None and not df_output_open.empty:
-        st.subheader("Pre-Open Momentum")
+        st.markdown(
+            "<div class='section-badge'><span class='icon'>🔔</span><span class='label'>Pre-Open Momentum</span></div>",
+            unsafe_allow_html=True
+        )
         df_output_open=df_output_open.style.apply(highlight_close, axis=1)
-        st.dataframe(df_output_open)
+        st.dataframe(df_output_open, use_container_width=True)
       
 st.markdown(
     """
-    <h6 style='text-align: center; color: gray;'> "All a person needs to do is observe what the market is telling him & evaluate it"-Jesse Livermore</h6>
-    <h3 style='text-align: center; color:#25AD91;'>Developed by Saurabh Sharma</h3>
-    <p style='text-align: center;font-size: 16px; '><a href='mailto:srb_sharma@outlook.com' style='text-align: center;'>Contact @ srb_sharma@outlook.com</a></p>
-
-    <p style='text-align: right; font-size: 11px; font-style: italic; color: gray;'>**Only Stocks with Traded value above 10L</p>
- 
+    <div class="footer-quote">"All a person needs to do is observe what the market is telling him &amp; evaluate it" — Jesse Livermore</div>
+    <div class="footer-name">Developed by Saurabh Sharma</div>
+    <p class="footer-contact" style='text-align: center;font-size: 15px; margin-top:0.3rem;'><a href='mailto:srb_sharma@outlook.com'>✉️ Contact @ srb_sharma@outlook.com</a></p>
+    <p class="footer-note">**Only Stocks with Traded value above 10L</p>
     """,
     unsafe_allow_html=True,
 )
