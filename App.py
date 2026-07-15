@@ -400,7 +400,7 @@ st.markdown(
         height: auto;
         padding: 10px 20px;
         border-radius: 8px;
-        background-color: #e7d4b1;
+        background-color: #1E3252;
         color: #C7D2E3;
         font-family: 'Playfair Display', serif;
         font-weight: 700;
