@@ -327,54 +327,97 @@ st.markdown(
         letter-spacing: 0.3px;
     }
 
-    /* Controls row card */
+    /* Toolbar — single horizontal control bar */
     .controls-card {
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(255,255,255,0.08);
+        background: linear-gradient(135deg, rgba(20,33,54,0.9) 0%, rgba(13,22,36,0.9) 100%);
+        border: 1px solid rgba(212,175,55,0.22);
         border-radius: 14px;
-        padding: 1rem 1.3rem;
-        margin-bottom: 0.6rem;
+        padding: 0.85rem 1.4rem;
+        margin-bottom: 1.6rem;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    }
+    /* Vertically align the checkbox with the button in the same row */
+    .controls-card [data-testid="stVerticalBlock"] {
+        display: flex;
+        justify-content: center;
+    }
+    .controls-card .stCheckbox {
+        margin-top: 0.35rem;
     }
 
-    /* Timestamp pill */
-    .timestamp-pill {
-        display: inline-block;
-        margin: 0 auto;
-        padding: 6px 16px;
+    /* Live-status timestamp pill (right-aligned in toolbar) */
+    .status-pill-wrap {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        height: 100%;
+        margin-top: 0.35rem;
+    }
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 16px;
         border-radius: 999px;
         background: rgba(212,175,55,0.08);
-        border: 1px solid rgba(212,175,55,0.3);
-        color: #D4AF37;
+        border: 1px solid rgba(212,175,55,0.35);
+        color: #E7ECF3;
         font-size: 12.5px;
         font-weight: 600;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.4px;
+        white-space: nowrap;
     }
-    .timestamp-wrap { text-align: center; margin: 0.4rem 0 1.6rem 0; }
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #3ED598;
+        box-shadow: 0 0 0 0 rgba(62,213,152,0.6);
+        animation: pulse-dot 2s infinite;
+        flex-shrink: 0;
+    }
+    @keyframes pulse-dot {
+        0%   { box-shadow: 0 0 0 0 rgba(62,213,152,0.55); }
+        70%  { box-shadow: 0 0 0 7px rgba(62,213,152,0); }
+        100% { box-shadow: 0 0 0 0 rgba(62,213,152,0); }
+    }
+    .status-label {
+        color: #D4AF37;
+        font-weight: 700;
+    }
 
     /* Tabs — restyled to match the navy/gold terminal theme */
     .stTabs [data-baseweb="tab-list"] {
         gap: 6px;
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(212,175,55,0.2);
+        background: #101C2E;
+        border: 1px solid rgba(212,175,55,0.25);
         border-radius: 12px;
         padding: 6px;
-        margin-top: 1.6rem;
+        margin-top: 0.4rem;
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);
     }
     .stTabs [data-baseweb="tab"] {
         height: auto;
         padding: 10px 20px;
         border-radius: 8px;
-        background-color: transparent;
-        color: #9DAAC0;
+        background-color: #182842;
+        color: #C7D2E3;
         font-family: 'Playfair Display', serif;
         font-weight: 700;
         font-size: 1.02rem;
         letter-spacing: 0.3px;
+        border: 1px solid rgba(255,255,255,0.05);
+        transition: all 0.15s ease-in-out;
+    }
+    .stTabs [data-baseweb="tab"]:hover {
+        background-color: #1E3252;
+        color: #F4E4A6;
     }
     .stTabs [aria-selected="true"] {
         background: linear-gradient(135deg, #D4AF37 0%, #B8912C 100%) !important;
         color: #0b1420 !important;
-        box-shadow: 0 4px 14px rgba(212,175,55,0.3);
+        box-shadow: 0 4px 14px rgba(212,175,55,0.35);
+        border: 1px solid rgba(212,175,55,0.6);
     }
     .stTabs [data-baseweb="tab-highlight"] {
         background-color: transparent;
@@ -503,24 +546,31 @@ st.markdown(
 )
 
 st.markdown('<div class="controls-card">', unsafe_allow_html=True)
-col1, col2 = st.columns([1, 1])  # Two equal-width columns
 
-with col1:
-    refresh = st.button("🔄  Refresh Market Data")
-    
-with col2:
-    fo_checkbox = st.checkbox("Only F&O Stocks", value=True)
-st.markdown('</div>', unsafe_allow_html=True)
-    
 # Add this after your main header markdown
 utc_now = datetime.utcnow()
 ist_tz = pytz.timezone('Asia/Kolkata')
 ist_time = utc_now.replace(tzinfo=pytz.utc).astimezone(ist_tz)
 current_time = ist_time.strftime("%H:%M:%S %d%b%y")
-st.markdown(
-    f"<div class='timestamp-wrap'><span class='timestamp-pill'>🕒 Updated At (IST): {current_time}</span></div>",
-    unsafe_allow_html=True
-)
+
+col1, col2, col3 = st.columns([1, 1, 1.4])  # Button | Checkbox | Live status
+
+with col1:
+    refresh = st.button("🔄  Refresh Market Data")
+
+with col2:
+    fo_checkbox = st.checkbox("Only F&O Stocks", value=True)
+
+with col3:
+    st.markdown(
+        f"<div class='status-pill-wrap'><span class='status-pill'>"
+        f"<span class='status-dot'></span>"
+        f"<span class='status-label'>LIVE</span> &nbsp;•&nbsp; Updated (IST): {current_time}"
+        f"</span></div>",
+        unsafe_allow_html=True
+    )
+
+st.markdown('</div>', unsafe_allow_html=True)
 
 if refresh:
 
