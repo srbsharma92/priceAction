@@ -351,12 +351,48 @@ st.markdown(
     }
     .timestamp-wrap { text-align: center; margin: 0.4rem 0 1.6rem 0; }
 
+    /* Top-level section header (groups tables) */
+    .section-header-wrap {
+        margin: 2.6rem 0 0.8rem 0;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+    .section-header-badge {
+        font-family: 'Playfair Display', serif;
+        font-weight: 700;
+        font-size: 1.5rem;
+        color: #F4E4A6;
+        letter-spacing: 0.3px;
+        white-space: nowrap;
+    }
+    .section-header-num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 30px;
+        height: 30px;
+        padding: 0 6px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #D4AF37 0%, #B8912C 100%);
+        color: #0b1420;
+        font-family: 'Inter', sans-serif;
+        font-weight: 800;
+        font-size: 0.85rem;
+        margin-right: 8px;
+    }
+    .section-header-line {
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(90deg, rgba(212,175,55,0.6) 0%, rgba(212,175,55,0.05) 100%);
+    }
+
     /* Section badges above each table */
     .section-badge {
         display: flex;
         align-items: center;
         gap: 10px;
-        margin: 1.8rem 0 0.6rem 0;
+        margin: 1.1rem 0 0.6rem 0;
         padding: 10px 16px;
         border-radius: 10px;
         background: linear-gradient(90deg, rgba(212,175,55,0.12) 0%, rgba(212,175,55,0.02) 100%);
@@ -491,7 +527,16 @@ if refresh:
 
     with st.spinner("Loading data..."):
         df_output, df_output_5mP,df_output_5mVol,df_output_15mP,df_output_15mVol,df_output_open = screener()
-     #5mins tables=============================   
+
+    # ===================== SECTION 1: 5 MINUTES =====================
+    st.markdown(
+        "<div class='section-header-wrap'>"
+        "<span class='section-header-num'>1</span>"
+        "<span class='section-header-badge'>5 Minutes</span>"
+        "<span class='section-header-line'></span>"
+        "</div>",
+        unsafe_allow_html=True
+    )
     if df_output_5mP is not None and not df_output_5mP.empty:
         st.markdown(
             "<div class='section-badge'><span class='icon'>⚡</span><span class='label'>Price Momentum in Last 5 Mins</span></div>",
@@ -508,7 +553,16 @@ if refresh:
         df_output_5mVol=df_output_5mVol.style.apply(highlight_close, axis=1)
         df_output_5mVol=theme_table(df_output_5mVol)
         st.table(df_output_5mVol)
-    #15mins tables=============================   
+
+    # ===================== SECTION 2: 15 MINUTES =====================
+    st.markdown(
+        "<div class='section-header-wrap'>"
+        "<span class='section-header-num'>2</span>"
+        "<span class='section-header-badge'>15 Minutes</span>"
+        "<span class='section-header-line'></span>"
+        "</div>",
+        unsafe_allow_html=True
+    )
     if df_output_15mP is not None and not df_output_15mP.empty:
         st.markdown(
             "<div class='section-badge'><span class='icon'>⚡</span><span class='label'>Price Momentum in Last 15 Mins</span></div>",
@@ -525,6 +579,16 @@ if refresh:
         df_output_15mVol=df_output_15mVol.style.apply(highlight_close, axis=1)
         df_output_15mVol=theme_table(df_output_15mVol)
         st.table(df_output_15mVol)
+
+    # ===================== SECTION 3: PRE-OPEN MARKET =====================
+    st.markdown(
+        "<div class='section-header-wrap'>"
+        "<span class='section-header-num'>3</span>"
+        "<span class='section-header-badge'>Pre-Open Market</span>"
+        "<span class='section-header-line'></span>"
+        "</div>",
+        unsafe_allow_html=True
+    )
     if df_output_open is not None and not df_output_open.empty:
         st.markdown(
             "<div class='section-badge'><span class='icon'>🔔</span><span class='label'>Pre-Open Momentum</span></div>",
