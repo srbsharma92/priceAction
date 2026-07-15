@@ -197,13 +197,47 @@ def highlight_close(row):
 # Purely cosmetic Styler wrapper — chained on top of highlight_close, does not
 # alter any values, columns, or the Bullish/Bearish logic itself. Only the
 # background_color / color / border-color / font-weight / text-align /
-# font-style properties are honored by st.dataframe's Styler support.
+# font-style properties are honored by st.dataframe's Styler support; the
+# table_styles (header row) additionally apply when rendered via st.table.
 def theme_table(styler):
-    return styler.set_properties(**{
-        'border-color': 'rgba(212,175,55,0.18)',
-        'font-weight': '500',
-        'text-align': 'center',
-    })
+    return (
+        styler
+        .set_properties(**{
+            'border-color': 'rgba(212,175,55,0.18)',
+            'font-weight': '500',
+            'text-align': 'center',
+        })
+        .set_table_styles([
+            {
+                'selector': 'thead th',
+                'props': [
+                    ('background-color', '#D4AF37'),
+                    ('color', '#0b1420'),
+                    ('font-weight', '700'),
+                    ('text-transform', 'uppercase'),
+                    ('letter-spacing', '0.5px'),
+                    ('font-size', '12.5px'),
+                    ('text-align', 'center'),
+                    ('padding', '10px 12px'),
+                    ('border-bottom', '2px solid #B8912C'),
+                ]
+            },
+            {
+                'selector': 'tbody td',
+                'props': [
+                    ('padding', '8px 12px'),
+                    ('border-bottom', '1px solid rgba(212,175,55,0.12)'),
+                ]
+            },
+            {
+                'selector': 'table',
+                'props': [
+                    ('border-collapse', 'collapse'),
+                    ('width', '100%'),
+                ]
+            },
+        ])
+    )
 
 
 
@@ -348,18 +382,18 @@ st.markdown(
         color: #E7ECF3 !important;
     }
 
-    /* DataFrame container polish */
-    [data-testid="stDataFrame"] {
+    /* Table container polish (st.table renders real HTML) */
+    [data-testid="stTable"] {
         border-radius: 12px;
         overflow: hidden;
         border: 1px solid rgba(212,175,55,0.25);
         box-shadow: 0 6px 18px rgba(0,0,0,0.35);
     }
-    [data-testid="stDataFrame"] > div {
+    [data-testid="stTable"] table {
         background-color: #0F1A2C;
     }
-    [data-testid="stElementToolbar"] {
-        background-color: #141F33 !important;
+    [data-testid="stTable"] tbody tr:hover td {
+        filter: brightness(1.12);
     }
 
     /* Divider */
@@ -449,7 +483,7 @@ if refresh:
         )
         df_output_5mP=df_output_5mP.style.apply(highlight_close,  axis=1)
         df_output_5mP=theme_table(df_output_5mP)
-        st.dataframe(df_output_5mP, use_container_width=True)
+        st.table(df_output_5mP)
     if df_output_5mVol is not None and not df_output_5mVol.empty:
         st.markdown(
             "<div class='section-badge'><span class='icon'>📊</span><span class='label'>Volume Momentum in Last 5 Mins</span></div>",
@@ -457,7 +491,7 @@ if refresh:
         )
         df_output_5mVol=df_output_5mVol.style.apply(highlight_close, axis=1)
         df_output_5mVol=theme_table(df_output_5mVol)
-        st.dataframe(df_output_5mVol, use_container_width=True)
+        st.table(df_output_5mVol)
     if df_output_open is not None and not df_output_open.empty:
         st.markdown(
             "<div class='section-badge'><span class='icon'>🔔</span><span class='label'>Pre-Open Momentum</span></div>",
@@ -465,7 +499,7 @@ if refresh:
         )
         df_output_open=df_output_open.style.apply(highlight_close, axis=1)
         df_output_open=theme_table(df_output_open)
-        st.dataframe(df_output_open, use_container_width=True)
+        st.table(df_output_open)
       
 st.markdown(
     """
