@@ -351,40 +351,39 @@ st.markdown(
     }
     .timestamp-wrap { text-align: center; margin: 0.4rem 0 1.6rem 0; }
 
-    /* Top-level section header (groups tables) */
-    .section-header-wrap {
-        margin: 2.6rem 0 0.8rem 0;
-        display: flex;
-        align-items: center;
-        gap: 14px;
+    /* Tabs — restyled to match the navy/gold terminal theme */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 6px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(212,175,55,0.2);
+        border-radius: 12px;
+        padding: 6px;
+        margin-top: 1.6rem;
     }
-    .section-header-badge {
+    .stTabs [data-baseweb="tab"] {
+        height: auto;
+        padding: 10px 20px;
+        border-radius: 8px;
+        background-color: transparent;
+        color: #9DAAC0;
         font-family: 'Playfair Display', serif;
         font-weight: 700;
-        font-size: 1.5rem;
-        color: #F4E4A6;
+        font-size: 1.02rem;
         letter-spacing: 0.3px;
-        white-space: nowrap;
     }
-    .section-header-num {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 30px;
-        height: 30px;
-        padding: 0 6px;
-        border-radius: 8px;
-        background: linear-gradient(135deg, #D4AF37 0%, #B8912C 100%);
-        color: #0b1420;
-        font-family: 'Inter', sans-serif;
-        font-weight: 800;
-        font-size: 0.85rem;
-        margin-right: 8px;
+    .stTabs [aria-selected="true"] {
+        background: linear-gradient(135deg, #D4AF37 0%, #B8912C 100%) !important;
+        color: #0b1420 !important;
+        box-shadow: 0 4px 14px rgba(212,175,55,0.3);
     }
-    .section-header-line {
-        flex: 1;
-        height: 1px;
-        background: linear-gradient(90deg, rgba(212,175,55,0.6) 0%, rgba(212,175,55,0.05) 100%);
+    .stTabs [data-baseweb="tab-highlight"] {
+        background-color: transparent;
+    }
+    .stTabs [data-baseweb="tab-border"] {
+        display: none;
+    }
+    .stTabs [data-baseweb="tab-panel"] {
+        padding-top: 1.4rem;
     }
 
     /* Section badges above each table */
@@ -528,75 +527,56 @@ if refresh:
     with st.spinner("Loading data..."):
         df_output, df_output_5mP,df_output_5mVol,df_output_15mP,df_output_15mVol,df_output_open = screener()
 
+    tab_5m, tab_15m, tab_open = st.tabs(["⏱️ 5 Minutes", "⏳ 15 Minutes", "🔔 Pre-Open Market"])
+
     # ===================== SECTION 1: 5 MINUTES =====================
-    st.markdown(
-        "<div class='section-header-wrap'>"
-        "<span class='section-header-num'>1</span>"
-        "<span class='section-header-badge'>5 Minutes</span>"
-        "<span class='section-header-line'></span>"
-        "</div>",
-        unsafe_allow_html=True
-    )
-    if df_output_5mP is not None and not df_output_5mP.empty:
-        st.markdown(
-            "<div class='section-badge'><span class='icon'>⚡</span><span class='label'>Price Momentum in Last 5 Mins</span></div>",
-            unsafe_allow_html=True
-        )
-        df_output_5mP=df_output_5mP.style.apply(highlight_close,  axis=1)
-        df_output_5mP=theme_table(df_output_5mP)
-        st.table(df_output_5mP)
-    if df_output_5mVol is not None and not df_output_5mVol.empty:
-        st.markdown(
-            "<div class='section-badge'><span class='icon'>📊</span><span class='label'>Volume Momentum in Last 5 Mins</span></div>",
-            unsafe_allow_html=True
-        )
-        df_output_5mVol=df_output_5mVol.style.apply(highlight_close, axis=1)
-        df_output_5mVol=theme_table(df_output_5mVol)
-        st.table(df_output_5mVol)
+    with tab_5m:
+        if df_output_5mP is not None and not df_output_5mP.empty:
+            st.markdown(
+                "<div class='section-badge'><span class='icon'>⚡</span><span class='label'>Price Momentum in Last 5 Mins</span></div>",
+                unsafe_allow_html=True
+            )
+            df_output_5mP=df_output_5mP.style.apply(highlight_close,  axis=1)
+            df_output_5mP=theme_table(df_output_5mP)
+            st.table(df_output_5mP)
+        if df_output_5mVol is not None and not df_output_5mVol.empty:
+            st.markdown(
+                "<div class='section-badge'><span class='icon'>📊</span><span class='label'>Volume Momentum in Last 5 Mins</span></div>",
+                unsafe_allow_html=True
+            )
+            df_output_5mVol=df_output_5mVol.style.apply(highlight_close, axis=1)
+            df_output_5mVol=theme_table(df_output_5mVol)
+            st.table(df_output_5mVol)
 
     # ===================== SECTION 2: 15 MINUTES =====================
-    st.markdown(
-        "<div class='section-header-wrap'>"
-        "<span class='section-header-num'>2</span>"
-        "<span class='section-header-badge'>15 Minutes</span>"
-        "<span class='section-header-line'></span>"
-        "</div>",
-        unsafe_allow_html=True
-    )
-    if df_output_15mP is not None and not df_output_15mP.empty:
-        st.markdown(
-            "<div class='section-badge'><span class='icon'>⚡</span><span class='label'>Price Momentum in Last 15 Mins</span></div>",
-            unsafe_allow_html=True
-        )
-        df_output_15mP=df_output_15mP.style.apply(highlight_close,  axis=1)
-        df_output_15mP=theme_table(df_output_15mP)
-        st.table(df_output_15mP)
-    if df_output_15mVol is not None and not df_output_15mVol.empty:
-        st.markdown(
-            "<div class='section-badge'><span class='icon'>📊</span><span class='label'>Volume Momentum in Last 15 Mins</span></div>",
-            unsafe_allow_html=True
-        )
-        df_output_15mVol=df_output_15mVol.style.apply(highlight_close, axis=1)
-        df_output_15mVol=theme_table(df_output_15mVol)
-        st.table(df_output_15mVol)
+    with tab_15m:
+        if df_output_15mP is not None and not df_output_15mP.empty:
+            st.markdown(
+                "<div class='section-badge'><span class='icon'>⚡</span><span class='label'>Price Momentum in Last 15 Mins</span></div>",
+                unsafe_allow_html=True
+            )
+            df_output_15mP=df_output_15mP.style.apply(highlight_close,  axis=1)
+            df_output_15mP=theme_table(df_output_15mP)
+            st.table(df_output_15mP)
+        if df_output_15mVol is not None and not df_output_15mVol.empty:
+            st.markdown(
+                "<div class='section-badge'><span class='icon'>📊</span><span class='label'>Volume Momentum in Last 15 Mins</span></div>",
+                unsafe_allow_html=True
+            )
+            df_output_15mVol=df_output_15mVol.style.apply(highlight_close, axis=1)
+            df_output_15mVol=theme_table(df_output_15mVol)
+            st.table(df_output_15mVol)
 
     # ===================== SECTION 3: PRE-OPEN MARKET =====================
-    st.markdown(
-        "<div class='section-header-wrap'>"
-        "<span class='section-header-num'>3</span>"
-        "<span class='section-header-badge'>Pre-Open Market</span>"
-        "<span class='section-header-line'></span>"
-        "</div>",
-        unsafe_allow_html=True
-    )
-    if df_output_open is not None and not df_output_open.empty:
-        st.markdown(
-            "<div class='section-badge'><span class='icon'>🔔</span><span class='label'>Pre-Open Momentum</span></div>",
-            unsafe_allow_html=True
-        )
-        df_output_open=df_output_open.style.apply(highlight_close, axis=1)
-        df_output_open=theme_table(df_output_open)
-        st.table(df_output_open)
+    with tab_open:
+        if df_output_open is not None and not df_output_open.empty:
+            st.markdown(
+                "<div class='section-badge'><span class='icon'>🔔</span><span class='label'>Pre-Open Momentum</span></div>",
+                unsafe_allow_html=True
+            )
+            df_output_open=df_output_open.style.apply(highlight_close, axis=1)
+            df_output_open=theme_table(df_output_open)
+            st.table(df_output_open)
       
 st.markdown(
     """
