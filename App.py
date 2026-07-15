@@ -194,6 +194,18 @@ def highlight_close(row):
         return ''
 
 
+# Purely cosmetic Styler wrapper — chained on top of highlight_close, does not
+# alter any values, columns, or the Bullish/Bearish logic itself. Only the
+# background_color / color / border-color / font-weight / text-align /
+# font-style properties are honored by st.dataframe's Styler support.
+def theme_table(styler):
+    return styler.set_properties(**{
+        'border-color': 'rgba(212,175,55,0.18)',
+        'font-weight': '500',
+        'text-align': 'center',
+    })
+
+
 
 # ============================= Streamlit UI part =============================
 
@@ -340,8 +352,14 @@ st.markdown(
     [data-testid="stDataFrame"] {
         border-radius: 12px;
         overflow: hidden;
-        border: 1px solid rgba(255,255,255,0.08);
+        border: 1px solid rgba(212,175,55,0.25);
         box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+    }
+    [data-testid="stDataFrame"] > div {
+        background-color: #0F1A2C;
+    }
+    [data-testid="stElementToolbar"] {
+        background-color: #141F33 !important;
     }
 
     /* Divider */
@@ -430,6 +448,7 @@ if refresh:
             unsafe_allow_html=True
         )
         df_output_5mP=df_output_5mP.style.apply(highlight_close,  axis=1)
+        df_output_5mP=theme_table(df_output_5mP)
         st.dataframe(df_output_5mP, use_container_width=True)
     if df_output_5mVol is not None and not df_output_5mVol.empty:
         st.markdown(
@@ -437,6 +456,7 @@ if refresh:
             unsafe_allow_html=True
         )
         df_output_5mVol=df_output_5mVol.style.apply(highlight_close, axis=1)
+        df_output_5mVol=theme_table(df_output_5mVol)
         st.dataframe(df_output_5mVol, use_container_width=True)
     if df_output_open is not None and not df_output_open.empty:
         st.markdown(
@@ -444,6 +464,7 @@ if refresh:
             unsafe_allow_html=True
         )
         df_output_open=df_output_open.style.apply(highlight_close, axis=1)
+        df_output_open=theme_table(df_output_open)
         st.dataframe(df_output_open, use_container_width=True)
       
 st.markdown(
