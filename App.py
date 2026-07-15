@@ -401,7 +401,7 @@ st.markdown(
         padding: 10px 20px;
         border-radius: 8px;
         background-color: #182842;
-        color: #C7D2E3;
+        color: #F3E5AB;
         font-family: 'Playfair Display', serif;
         font-weight: 700;
         font-size: 1.02rem;
