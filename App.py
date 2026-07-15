@@ -178,7 +178,7 @@ def screener():
     df_15m_Price= df[ (df['change|15'].abs() > 0.7) & ( (df['volume|5']*df['close']) > 1000000)].sort_values(by='change|15', ascending=False)
     df_15m_Price['Momentum']=  np.where(df_15m_Price['change|15'] > 0, 'Bullish','Bearish')
     df_15m_Price=df_15m_Price[['name','change|15','Momentum']]
-    df_15m_Price.columns=['Stock Name','Price Change% in 5mins','Momentum']
+    df_15m_Price.columns=['Stock Name','Price Change% in 15mins','Momentum']
      
     df_15m_Vol= df[ (df['volume_change|15'] > 200 ) & ( (df['volume|5']*df['close']) > 1000000) ].sort_values(by='volume_change|15', ascending=False)
     df_15m_Vol['Momentum']=  np.where(df_15m_Vol['change|15'] > 0, 'Bullish','Bearish')
@@ -187,7 +187,7 @@ def screener():
      
     #Presentation
     df_15m_Vol['Traded Value'] = (df_15m_Vol['Traded Value'] / 10000000).round(2).astype(str) + 'Cr'
-    df_15m_Vol.columns=['Stock Name','Price Change% in 5mins','Volume Change% in 5mins','Momentum','Days Traded Value']
+    df_15m_Vol.columns=['Stock Name','Price Change% in 15mins','Volume Change% in 15mins','Momentum','Days Traded Value']
 
     #opening
     df_opening= df[df['gap'].abs() > 2 ].sort_values(by='gap', ascending=False)
