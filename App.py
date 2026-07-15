@@ -389,7 +389,7 @@ st.markdown(
     /* Tabs — restyled to match the navy/gold terminal theme */
     .stTabs [data-baseweb="tab-list"] {
         gap: 6px;
-        background: #101C2E;
+        background: #e7d4b1;
         border: 1px solid rgba(212,175,55,0.25);
         border-radius: 12px;
         padding: 6px;
