@@ -388,36 +388,41 @@ st.markdown(
 
     /* Tabs — restyled to match the navy/gold terminal theme */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 6px;
-        background: #e7d4b1;
+        gap: 8px;
+        background: #101C2E !important;
         border: 1px solid rgba(212,175,55,0.25);
         border-radius: 12px;
         padding: 6px;
         margin-top: 0.4rem;
-        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);
     }
     .stTabs [data-baseweb="tab"] {
         height: auto;
         padding: 10px 20px;
         border-radius: 8px;
-        background-color: #1E3252;
-        color: #C7D2E3;
+        background-color: rgba(212,175,55,0.22) !important;
+        color: #F4E4A6 !important;
         font-family: 'Playfair Display', serif;
         font-weight: 700;
         font-size: 1.02rem;
         letter-spacing: 0.3px;
-        border: 1px solid rgba(255,255,255,0.05);
+        border: 1px solid rgba(212,175,55,0.35);
         transition: all 0.15s ease-in-out;
     }
+    .stTabs [data-baseweb="tab"] p {
+        color: #F4E4A6 !important;
+        font-weight: 700 !important;
+    }
     .stTabs [data-baseweb="tab"]:hover {
-        background-color: #1E3252;
-        color: #F4E4A6;
+        background-color: rgba(212,175,55,0.34) !important;
     }
     .stTabs [aria-selected="true"] {
         background: linear-gradient(135deg, #D4AF37 0%, #B8912C 100%) !important;
         color: #0b1420 !important;
         box-shadow: 0 4px 14px rgba(212,175,55,0.35);
         border: 1px solid rgba(212,175,55,0.6);
+    }
+    .stTabs [aria-selected="true"] p {
+        color: #0b1420 !important;
     }
     .stTabs [data-baseweb="tab-highlight"] {
         background-color: transparent;
